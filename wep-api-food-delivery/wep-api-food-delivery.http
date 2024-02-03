@@ -1,0 +1,6 @@
+@wep_api_food_delivery_HostAddress = http://localhost:5147
+
+GET {{wep_api_food_delivery_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
