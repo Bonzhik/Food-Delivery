@@ -34,6 +34,7 @@ namespace wep_api_food.Services.Implementations
             var value = await _cacheDb.StringGetAsync(key);
             if (!string.IsNullOrEmpty(value))
             {
+                Console.WriteLine("Данные из кеша");
                 return JsonSerializer.Deserialize<T>(value);
             }
             return default(T);

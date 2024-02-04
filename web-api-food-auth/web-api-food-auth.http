@@ -1,0 +1,6 @@
+@web_api_food_auth_HostAddress = http://localhost:5045
+
+GET {{web_api_food_auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

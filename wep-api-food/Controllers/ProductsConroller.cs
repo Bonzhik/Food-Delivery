@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using wep_api_food.Dtos;
 using wep_api_food.Models;
@@ -26,6 +27,7 @@ namespace wep_api_food.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetProducts()
         {
             var cacheData = await _cacheService.GetDataAsync<ICollection<Product>>("products");
@@ -42,10 +44,16 @@ namespace wep_api_food.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(Guid id)
         {
-            return null;
+            var product = _productRepository.Get(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct(ProductCreateModel productDto)
         {
             if (productDto == null)

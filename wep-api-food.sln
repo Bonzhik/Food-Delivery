@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wep-api-food", "wep-api-food\wep-api-food.csproj", "{95ECD7B0-1CA8-4EB5-B2FD-FA7B2D246C3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wep-api-food", "wep-api-food\wep-api-food.csproj", "{95ECD7B0-1CA8-4EB5-B2FD-FA7B2D246C3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wep-api-food-delivery", "wep-api-food-delivery\wep-api-food-delivery.csproj", "{2AC95884-7044-4661-AB2F-0BD21D179B1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wep-api-food-delivery", "wep-api-food-delivery\wep-api-food-delivery.csproj", "{2AC95884-7044-4661-AB2F-0BD21D179B1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web-api-food-auth", "web-api-food-auth\web-api-food-auth.csproj", "{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2AC95884-7044-4661-AB2F-0BD21D179B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AC95884-7044-4661-AB2F-0BD21D179B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AC95884-7044-4661-AB2F-0BD21D179B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

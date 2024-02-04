@@ -1,6 +1,72 @@
-﻿namespace wep_api_food.Controllers
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using wep_api_food.Dtos;
+using wep_api_food.Enums;
+using wep_api_food.Helpers.Hash;
+using wep_api_food.Models;
+using wep_api_food.Repositories.Interfaces;
+using wep_api_food.Services.Intefaces;
+
+namespace wep_api_food.Controllers
 {
-    public class UsersController
+    [ApiController]
+    [Route("api/pub/[controller]")]
+    public class UsersController : ControllerBase
     {
+        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly IAuthDataClient _authDataClient;
+
+        public UsersController(IMapper mapper, 
+            IUserRepository userRepository, 
+            IPasswordHasher passwordHasher, 
+            IAuthDataClient authDataClient)
+        {
+            _mapper = mapper;
+            _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
+            _authDataClient = authDataClient;
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(UserCreateModel userDto)
+        {
+            if (userDto == null)
+            {
+                return BadRequest();
+            }
+            if (await _userRepository.IsExists(userDto.Email))
+            {
+                return Conflict();
+            }
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = userDto.Email,
+                Password = _passwordHasher.HashPassword(userDto.Password),
+                Role = Roles.User
+            };
+
+            if (! await _userRepository.Create(user))
+            {
+                return StatusCode(500, "Internal Server Error");
+            }
+
+            var token = await _authDataClient.ReturnTokenAsync(user.Email, user.Role.ToString());
+
+            var userRead = new UserReadModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                Token = token,
+                Password = userDto.Password
+            };
+
+            return Ok(userRead);
+        }
+
     }
 }

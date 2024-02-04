@@ -5,5 +5,6 @@ namespace wep_api_food.Repositories.Interfaces
     public interface IUserRepository : IBaseRepository<User>
     {
         Task<User> Get(string email);
+        Task<bool> IsExists(string email);
     }
 }
