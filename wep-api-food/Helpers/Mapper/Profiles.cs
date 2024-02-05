@@ -9,6 +9,7 @@ namespace wep_api_food.Helpers.Mapper
         public Profiles()
         {
             CreateMap<ProductCreateModel, Product>();
+            CreateMap<Product, ProductReadModel>();
         }
     }
 }

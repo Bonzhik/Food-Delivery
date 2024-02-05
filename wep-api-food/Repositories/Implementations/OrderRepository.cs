@@ -15,38 +15,26 @@ namespace wep_api_food.Repositories.Implementations
             _baseRepository = baseRepository;
         }
 
-        public async Task<bool> Create(Order order, Dictionary<Guid, int> products)
+        public async Task<bool> Create(Order order, List<OrderProduct> orderProducts)
         {
             await _baseRepository.Create(order);
 
-            foreach (var product in products)
+            foreach (var product in orderProducts)
             {
-                var orderProductEntity = new OrderProduct()
-                {
-                    Product = await _context.Products.FindAsync(product.Key),
-                    Order = order,
-                    Quantity = product.Value
-                };
-                await _context.AddAsync(orderProductEntity);
+                await _context.AddAsync(product);
             }
             return await Save();
         }
-        public async Task<bool> Update(Order order, Dictionary<Guid, int> products)
+        public async Task<bool> Update(Order order, List<OrderProduct> orderProducts)
         {
             var onDeleteEntities = _context.OrderProducts.
                 Where(p => p.OrderId == order.Id).ToList();
             _context.RemoveRange(onDeleteEntities);
             await _context.SaveChangesAsync();
 
-            foreach (var product in products)
+            foreach (var product in orderProducts)
             {
-                var orderProductEntity = new OrderProduct()
-                {
-                    Product = await _context.Products.FindAsync(product.Key),
-                    Order = order,
-                    Quantity = product.Value
-                };
-                _context.Add(orderProductEntity);
+                await _context.AddAsync(product);
             }
             return await Save();
         }

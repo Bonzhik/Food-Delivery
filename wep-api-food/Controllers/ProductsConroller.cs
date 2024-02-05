@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using wep_api_food.Dtos;
 using wep_api_food.Models;
 using wep_api_food.Repositories.Interfaces;
@@ -27,15 +28,15 @@ namespace wep_api_food.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetProducts()
         {
             var cacheData = await _cacheService.GetDataAsync<ICollection<Product>>("products");
             if (cacheData != null)
             {
-                return Ok(cacheData);
+                var returnProduct = _mapper.Map<ICollection<ProductReadModel>>(cacheData);
+                return Ok(returnProduct);
             }
-            var products = await _productRepository.GetAll();
+            var products = _mapper.Map<ICollection<ProductReadModel>>(await _productRepository.GetAll());
             var expTime = DateTime.Now.AddMinutes(10);
             await _cacheService.SetDataAsync("products", products, expTime);
 
@@ -44,7 +45,7 @@ namespace wep_api_food.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(Guid id)
         {
-            var product = _productRepository.Get(id);
+            var product = _mapper.Map<ProductReadModel>(_productRepository.Get(id));
             if (product == null)
             {
                 return NotFound();

@@ -38,6 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IAuthDataClient, AuthDataClient>();
+builder.Services.AddSingleton(typeof(IMessageBusService<>), typeof(MessageBusService<>));  
 
 builder.Services.AddScoped(typeof(BaseRepository<>));
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
