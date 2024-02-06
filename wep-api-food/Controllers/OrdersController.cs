@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using wep_api_food.Dtos;
+using wep_api_food.Enums;
 using wep_api_food.Models;
 using wep_api_food.Repositories.Interfaces;
 using wep_api_food.Services.Intefaces;
@@ -16,25 +17,25 @@ namespace wep_api_food.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IOrderRepository _orderRepository;
-        //private readonly IMessageBusService<OrderMessage> _messageBusService;
+        private readonly IMessageBusService<OrderMessage> _messageBusService;
         private readonly IProductRepository _productRepository;
         private readonly IUserRepository _userRepository;
 
         public OrdersController(IMapper mapper,
             IOrderRepository orderRepository,
-            //IMessageBusService<OrderMessage> messageBusService,
+            IMessageBusService<OrderMessage> messageBusService,
             IProductRepository productRepository,
             IUserRepository userRepository)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
-            //_messageBusService = messageBusService;
+            _messageBusService = messageBusService;
             _productRepository = productRepository;
             _userRepository = userRepository;
         }
 
         [HttpPost]
-        [Authorize(Roles="User")]
+        [Authorize]
         public async Task<ActionResult> CreateOrder(OrderCreateModel orderDto)
         {
             if (orderDto == null)
@@ -63,7 +64,17 @@ namespace wep_api_food.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
 
-            return Ok();
+            var orderMessage = new OrderMessage()
+            {
+                Id = order.Id,
+                ProductsInOrder = orderDto.ProductsInOrder,
+                Status = OrderStatuses.Create,
+                Address = orderDto.Address
+            };
+
+            _messageBusService.SendMessage(orderMessage);
+
+            return Ok(orderDto);
         }
     }
 }

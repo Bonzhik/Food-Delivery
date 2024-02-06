@@ -1,0 +1,18 @@
+syntax="proto3";
+
+option csharp_namespace = "web_api_food_delivery";
+
+service GrpcToken{
+    rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+}
+
+message CreateTokenRequest{
+    string email = 1;
+    string role = 2;
+    string audience = 3;
+    string key = 4;
+}
+
+message CreateTokenResponse{
+    string token = 1;
+}

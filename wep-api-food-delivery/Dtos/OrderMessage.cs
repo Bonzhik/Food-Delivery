@@ -1,7 +1,6 @@
-﻿using wep_api_food.Enums;
-using wep_api_food.Models;
+﻿using wep_api_food_delivery.Enums;
 
-namespace wep_api_food.Dtos
+namespace wep_api_food_delivery.Dtos
 {
     public class OrderMessage
     {

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace wep_api_food.Services.Implementations
 {
-    public class MessageBusService<T> : IMessageBusService<T> where T : BaseMessage
+    public class MessageBusService<T> : IMessageBusService<T> where T : class
     {
         private readonly IConfiguration _configuration;
         private readonly IConnection _connection;
