@@ -1,6 +1,9 @@
 ﻿
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
+using wep_api_food_delivery.Dtos;
 
 namespace wep_api_food_delivery.Services.Implementations
 {
@@ -45,10 +48,26 @@ namespace wep_api_food_delivery.Services.Implementations
 
             var consumer = new EventingBasicConsumer(_channel);
 
+            consumer.Received += async (ModuleHandle, ea) =>
+            {
+                var body = ea.Body;
+                try
+                {
+                    var message = Encoding.UTF8.GetString(body.ToArray());
+                    var eventData = JsonSerializer.Deserialize<OrderMessage>(message);
+                    await _eventProcessor.HandleEvent(eventData);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                }
+            };
+
             _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
 
             return Task.CompletedTask;
         }
+
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
             Console.WriteLine("RabbitMQ Showdown");

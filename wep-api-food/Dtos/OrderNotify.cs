@@ -1,6 +1,6 @@
-﻿using wep_api_food_delivery.Enums;
+﻿using wep_api_food.Enums;
 
-namespace wep_api_food_delivery.Dtos
+namespace wep_api_food.Dtos
 {
     public class OrderNotify
     {

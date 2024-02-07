@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using wep_api_food.Services.Implementations;
 using wep_api_food_delivery.Data;
+using wep_api_food_delivery.Services.Implementations;
+using wep_api_food_delivery.Services.Intefaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
 
+builder.Services.AddHostedService<MessageBusSub>();
+builder.Services.AddSingleton<EventProcessor>();
+builder.Services.AddScoped<IAuthDataClient, AuthDataClient>();
+builder.Services.AddScoped<HttpClientSender>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -38,4 +46,5 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+Task.Delay(10000).Wait();
 app.Run();

@@ -22,7 +22,7 @@ namespace wep_api_food_delivery.Services.Implementations
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await _client.PostAsync(_configuration["Food"],httpContent);
+            var response = await _client.PostAsync(_configuration["FoodNotify"],httpContent);
 
             if (response.IsSuccessStatusCode)
             {

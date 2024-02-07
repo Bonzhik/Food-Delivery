@@ -1,31 +1,48 @@
 ﻿using wep_api_food_delivery.Data;
+using wep_api_food_delivery.Dtos;
 using wep_api_food_delivery.Enums;
+using wep_api_food_delivery.Models;
 
 namespace wep_api_food_delivery.Services.Implementations
 {
     public class EventProcessor
     {
-        public EventProcessor()
+        private readonly ApplicationDbContext _context;
+
+        public EventProcessor(ApplicationDbContext context)
         {
-            
+            _context = context;
         }
-        public void HandleEvent(OrderStatuses status)
+        public async Task HandleEvent(OrderMessage orderMessage)
         {
-            switch (status)
+            switch (orderMessage.Status)
             {
                 case OrderStatuses.Create:
+                    await OnCreate(orderMessage);
                     break;
                 case OrderStatuses.Cancel:
+                    await OnCansel(orderMessage);
                     break;
             }
         }
-        private bool OnCreate()
+        private async Task<bool> OnCreate(OrderMessage orderMessage)
         {
-            return false;
+            var order = new Order()
+            {
+                Id = orderMessage.Id,
+                Address = orderMessage.Address,
+                Status = orderMessage.Status,
+                User = null
+            };
+            order.OrderItems = orderMessage.ProductsInOrder.Select(item => new OrderItem { Id = Guid.NewGuid(), Quantity = item.Quantity, Title = item.Product.Title, Order = order }).ToList();
+            await _context.AddAsync(order);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
-        private bool OnDelete()
+        private async Task<bool> OnCansel(OrderMessage orderMessage)
         {
-            return false;
+            var order = await _context.Orders.FindAsync(orderMessage.Id);
+            _context.Remove(order);
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }
