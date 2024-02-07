@@ -78,13 +78,14 @@ namespace wep_api_food.Controllers
         }
 
         [HttpPost]
+        [Route("Notify")]
         public async Task<IActionResult> OrderHook(OrderNotify orderNotify)
         {
             var order = await _orderRepository.Get(orderNotify.Id);
             order.Status = orderNotify.Status;
             await _orderRepository.Save();
 
-            return Ok(order);
+            return Ok();
         }
     }
 }

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wep-api-food", "wep-api-foo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wep-api-food-delivery", "wep-api-food-delivery\wep-api-food-delivery.csproj", "{2AC95884-7044-4661-AB2F-0BD21D179B1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web-api-food-auth", "web-api-food-auth\web-api-food-auth.csproj", "{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "web-api-food-auth", "web-api-food-auth\web-api-food-auth.csproj", "{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

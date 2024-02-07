@@ -9,7 +9,7 @@ using wep_api_food_delivery.Services.Implementations;
 namespace wep_api_food_delivery.Controllers
 {
     [ApiController]
-    [Route("api/sub/[conroller]")]
+    [Route("api/sub/[controller]")]
     public class OrdersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

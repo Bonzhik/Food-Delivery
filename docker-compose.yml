@@ -1,0 +1,105 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+services:
+  web-api-food:
+    image: bonzhik/web-api-food:latest
+    depends_on:
+      - "web-api-food-auth"
+      - "rabbitmq"
+      - "food-db"
+      - "redis"
+    container_name: web-api-food
+    ports:
+      - "8080:80"
+    build:
+      context: ./wep-api-food
+      dockerfile: Dockerfile
+    environment: 
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=food-db;Port=5432;Database=foodDB;
+      - ASPNETCORE_URLS=http://+:80
+    networks: 
+      - dev 
+  web-api-food-delivery:
+    image: bonzhik/web-api-food-delivery:latest
+    depends_on:
+      - "rabbitmq"
+      - "web-api-food-auth"
+      - "web-api-food"
+      - "delivery-db"
+    container_name: web-api-food-delivery
+    ports:
+      - "8081:80"
+    build:
+      context: ./wep-api-food-delivery
+      dockerfile: Dockerfile
+    environment: 
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=delivery-db;Port=5432;Database=deliveryDB;
+      - ASPNETCORE_URLS=http://+:80
+    networks: 
+      - dev
+  web-api-food-auth:
+    image: bonzhik/web-api-food-auth:latest
+    container_name: web-api-food-auth
+    ports:
+      - "8082:81"
+    build:
+      context: ./web-api-food-auth
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - dev
+  food-db:
+    image: postgres:latest
+    container_name: food-db
+    restart: always
+    environment:
+      POSTGRES_DB: foodDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes: 
+      - food-data:/var/lib/postgresql/data
+    networks:
+      - dev
+  delivery-db:
+    image: postgres:latest
+    container_name: delivery-db
+    restart: always
+    environment:
+      POSTGRES_DB: deliveryDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes: 
+      - delivery-data:/var/lib/postgresql/data
+    networks:
+      - dev
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - dev
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks: 
+      - dev   
+volumes:
+  rabbitmq-data:
+  delivery-data:
+  food-data:
