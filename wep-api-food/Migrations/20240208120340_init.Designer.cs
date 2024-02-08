@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using wep_api_food_delivery.Data;
+using wep_api_food.Data;
 
 #nullable disable
 
-namespace wep_api_food_delivery.Migrations
+namespace wep_api_food.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240206112445_init")]
+    [Migration("20240208120340_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,11 +25,15 @@ namespace wep_api_food_delivery.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.Order", b =>
+            modelBuilder.Entity("wep_api_food.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -44,14 +48,35 @@ namespace wep_api_food_delivery.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.OrderItem", b =>
+            modelBuilder.Entity("wep_api_food.Models.OrderProduct", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrderId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderProducts");
+                });
+
+            modelBuilder.Entity("wep_api_food.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -62,12 +87,10 @@ namespace wep_api_food_delivery.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderItems");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.User", b =>
+            modelBuilder.Entity("wep_api_food.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,9 +112,9 @@ namespace wep_api_food_delivery.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.Order", b =>
+            modelBuilder.Entity("wep_api_food.Models.Order", b =>
                 {
-                    b.HasOne("wep_api_food_delivery.Models.User", "User")
+                    b.HasOne("wep_api_food.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -100,23 +123,36 @@ namespace wep_api_food_delivery.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.OrderItem", b =>
+            modelBuilder.Entity("wep_api_food.Models.OrderProduct", b =>
                 {
-                    b.HasOne("wep_api_food_delivery.Models.Order", "Order")
-                        .WithMany("OrderItems")
+                    b.HasOne("wep_api_food.Models.Order", "Order")
+                        .WithMany("OrderProducts")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("wep_api_food.Models.Product", "Product")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.Order", b =>
+            modelBuilder.Entity("wep_api_food.Models.Order", b =>
                 {
-                    b.Navigation("OrderItems");
+                    b.Navigation("OrderProducts");
                 });
 
-            modelBuilder.Entity("wep_api_food_delivery.Models.User", b =>
+            modelBuilder.Entity("wep_api_food.Models.Product", b =>
+                {
+                    b.Navigation("OrderProducts");
+                });
+
+            modelBuilder.Entity("wep_api_food.Models.User", b =>
                 {
                     b.Navigation("Orders");
                 });

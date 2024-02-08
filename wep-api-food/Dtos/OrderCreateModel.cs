@@ -4,7 +4,7 @@ namespace wep_api_food.Dtos
 {
     public class OrderCreateModel
     {
-        public ICollection<ProductsInOrder> ProductsInOrder { get; set; }
+        public List<ProductsInOrder> ProductsInOrder { get; set; }
         public string Address { get; set; }
     }
 }

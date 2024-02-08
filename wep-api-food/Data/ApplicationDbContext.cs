@@ -15,6 +15,11 @@ namespace wep_api_food.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
+
+        public bool AnyDataExists()
+        {
+            return Products.Any() || Orders.Any() || Users.Any() || OrderProducts.Any();
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OrderProduct>()

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
 using wep_api_food.Data;
 using wep_api_food.Helpers.Hash;
@@ -53,6 +54,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+var context = app.Services.GetRequiredService<ApplicationDbContext>();
+context.Database.Migrate();
+SeedData.Initialize(context);
 
 app.UseAuthentication();
 app.UseAuthorization();

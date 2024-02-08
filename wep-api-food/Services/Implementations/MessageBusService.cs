@@ -38,23 +38,28 @@ namespace wep_api_food.Services.Implementations
         }
         public void SendMessage(T entity)
         {
-            var options = new JsonSerializerOptions
+            try
             {
-                ReferenceHandler = ReferenceHandler.Preserve
-            };
-            var message = JsonSerializer.Serialize(entity, options);
+                var message = JsonSerializer.Serialize(entity);
+                Console.WriteLine($"Serialized message -----> {message}");
 
-            if (_connection.IsOpen)
+                if (_connection.IsOpen)
+                {
+                    var body = Encoding.UTF8.GetBytes(message);
+
+                    _channel.BasicPublish(
+                        exchange: "trigger",
+                        routingKey: "",
+                        basicProperties: null,
+                        body: body
+                        );
+                }
+                Console.WriteLine("MessageSended");
+            } catch (Exception ex)
             {
-                var body = Encoding.UTF8.GetBytes(message);
-
-                _channel.BasicPublish(
-                    exchange: "trigger",
-                    routingKey: "",
-                    basicProperties: null,
-                    body : body
-                    );
+                Console.WriteLine($"While sending message was ----> {ex.Message} ");
             }
+            
         }
         public void Dispose()
         {

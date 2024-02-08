@@ -47,6 +47,7 @@ namespace wep_api_food.Controllers
             var user = await _userRepository.Get(User.FindFirstValue(ClaimTypes.NameIdentifier));
             order.User = user;
             order.Status = Enums.OrderStatuses.Create;
+            order.Address = orderDto.Address;
             List<OrderProduct> orderProductsEntities = new List<OrderProduct>();
             foreach (var product in orderDto.ProductsInOrder)
             {

@@ -49,7 +49,7 @@ services:
       context: ./web-api-food-auth
       dockerfile: Dockerfile
     environment:
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://+:81
     networks:
       - dev
   food-db:

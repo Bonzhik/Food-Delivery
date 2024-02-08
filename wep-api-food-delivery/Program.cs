@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using wep_api_food.Services.Implementations;
 using wep_api_food_delivery.Data;
+using wep_api_food_delivery.Factories;
 using wep_api_food_delivery.Services.Implementations;
 using wep_api_food_delivery.Services.Intefaces;
 
@@ -33,7 +34,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddHostedService<MessageBusSub>();
 builder.Services.AddSingleton<EventProcessor>();
 builder.Services.AddScoped<IAuthDataClient, AuthDataClient>();
-builder.Services.AddScoped<HttpClientSender>();
+builder.Services.AddHttpClient<HttpClientSender>();
+builder.Services.AddSingleton<IDbContextFactory, DbContextFactory>(provider =>
+{
+    var options = provider.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
+    return new DbContextFactory(options);
+});
 
 var app = builder.Build();
 
@@ -42,6 +48,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+var context = app.Services.GetRequiredService<ApplicationDbContext>();
+context.Database.Migrate();
+SeedData.Initialize(context);
 
 app.UseAuthentication();
 app.UseAuthorization();

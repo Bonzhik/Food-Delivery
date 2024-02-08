@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using wep_api_food.Dtos;
 using wep_api_food.Enums;
 using wep_api_food.Helpers.Hash;
@@ -65,6 +66,30 @@ namespace wep_api_food.Controllers
                 Password = userDto.Password
             };
 
+            return Ok(userRead);
+        }
+
+        [HttpGet("Login")]
+        public async Task<IActionResult> Login(UserLoginModel userDto)
+        {
+            var user = await _userRepository.Get(userDto.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            if (!_passwordHasher.VerifyPasswod(user.Password, userDto.Password)) {
+                return BadRequest();
+            }
+            var token = await _authDataClient.ReturnTokenAsync(user.Email, user.Role.ToString());
+
+            var userRead = new UserReadModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                Token = token,
+                Password = userDto.Password
+            };
             return Ok(userRead);
         }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace wep_api_food.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +46,8 @@ namespace wep_api_food.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
