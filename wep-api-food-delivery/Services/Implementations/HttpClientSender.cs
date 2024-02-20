@@ -8,11 +8,14 @@ namespace wep_api_food_delivery.Services.Implementations
     {
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<HttpClientSender> _logger;
 
-        public HttpClientSender(HttpClient client, IConfiguration configuration)
+        public HttpClientSender(HttpClient client, IConfiguration configuration, ILogger<HttpClientSender> logger)
         {
             _client = client;
             _configuration = configuration;
+            _logger = logger;
+
         }
 
         public async Task NotifyAboutOrder(OrderNotify order)
@@ -26,11 +29,11 @@ namespace wep_api_food_delivery.Services.Implementations
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("--> Sync POST to FoodService was OK!");
+               _logger.LogInformation($"--> Sync POST to FoodService was OK! {DateTime.UtcNow}");
             }
             else
             {
-                Console.WriteLine("--> Sync POST to FoodService was NOT OK!");
+               _logger.LogInformation($"--> Sync POST to FoodService was not OK! {DateTime.UtcNow}");
             }
         }
     }

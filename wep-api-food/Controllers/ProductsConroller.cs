@@ -17,15 +17,19 @@ namespace wep_api_food.Controllers
         private readonly IProductRepository _productRepository;
         private readonly ICacheService _cacheService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProductsConroller> _logger;
 
         public ProductsConroller(
             IProductRepository productRepository, 
             ICacheService cacheService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<ProductsConroller> logger)
         {
             _productRepository = productRepository;
             _cacheService = cacheService;
             _mapper = mapper;
+            _logger = logger;
+
         }
         [HttpGet]
         public async Task<IActionResult> GetProducts()
@@ -48,6 +52,7 @@ namespace wep_api_food.Controllers
             var product = _mapper.Map<ProductReadModel>(_productRepository.Get(id));
             if (product == null)
             {
+                _logger.LogWarning($"Попытка получить несуществующий продукт {id} - {DateTime.UtcNow}");
                 return NotFound();
             }
             return Ok(product);
@@ -59,11 +64,13 @@ namespace wep_api_food.Controllers
         {
             if (productDto == null)
             {
+                _logger.LogWarning($"Получена пустая форма на создание продукта {DateTime.UtcNow}");
                 return BadRequest();
             }
 
             if (await _productRepository.IsExists(productDto.Title))
             {
+                _logger.LogWarning($"Попытка добавить продукт с уже существующим именем {productDto.Title} - {DateTime.UtcNow}");
                 return Conflict();
             }
 

@@ -8,7 +8,7 @@ namespace wep_api_food.Repositories.Implementations
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        public UserRepository(ApplicationDbContext context) : base(context)
+        public UserRepository(ApplicationDbContext context, ILogger<UserRepository> logger) : base(context, logger)
         {
         }
 

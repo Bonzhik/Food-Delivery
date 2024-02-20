@@ -9,6 +9,6 @@ namespace wep_api_food.Repositories.Interfaces
         Task<bool> Create(T entity);
         Task<bool> Update(T entity);
         Task<bool> Delete(T entity);
-        Task<bool> Save();
+        Task<bool> Save(T entity);
     }
 }

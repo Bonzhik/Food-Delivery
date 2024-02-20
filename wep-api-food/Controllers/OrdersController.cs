@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using wep_api_food.Dtos;
 using wep_api_food.Enums;
+using wep_api_food.Exceptions;
 using wep_api_food.Models;
 using wep_api_food.Repositories.Interfaces;
 using wep_api_food.Services.Intefaces;
@@ -20,18 +21,21 @@ namespace wep_api_food.Controllers
         private readonly IMessageBusService<OrderMessage> _messageBusService;
         private readonly IProductRepository _productRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<OrdersController> _logger;
 
         public OrdersController(IMapper mapper,
             IOrderRepository orderRepository,
             IMessageBusService<OrderMessage> messageBusService,
             IProductRepository productRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ILogger<OrdersController> logger)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _messageBusService = messageBusService;
             _productRepository = productRepository;
             _userRepository = userRepository;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -40,6 +44,7 @@ namespace wep_api_food.Controllers
         {
             if (orderDto == null)
             {
+                _logger.LogWarning($"Пришел пустой заказ {DateTime.UtcNow}");
                 return BadRequest();
             }
             Order order = new Order();
@@ -51,6 +56,28 @@ namespace wep_api_food.Controllers
             List<OrderProduct> orderProductsEntities = new List<OrderProduct>();
             foreach (var product in orderDto.ProductsInOrder)
             {
+                try
+                {
+                    var productCheck = await _productRepository.Get(product.Product.Id);
+                    if (productCheck == null)
+                    {
+                        throw new NotFoundException($"Не найден продукт {product.Product.Id}");
+                    }
+                    if (productCheck.Quantity < product.Quantity)
+                    {
+                        throw new NotEnoughProductsException($"Недостаточно продуктов {productCheck.Id} для заказа {order.Id}");
+                    }
+                }
+                catch(NotEnoughProductsException ex)
+                {
+                    _logger.LogWarning(ex.Message, DateTime.UtcNow);
+                    return StatusCode(501, ex.Message);
+                }
+                catch(NotFoundException ex)
+                {
+                    _logger.LogWarning(ex.Message, DateTime.UtcNow);
+                    return StatusCode(502, ex.Message);
+                }
                 var orderProduct = new OrderProduct()
                 {
                     Order = order,
@@ -84,7 +111,7 @@ namespace wep_api_food.Controllers
         {
             var order = await _orderRepository.Get(orderNotify.Id);
             order.Status = orderNotify.Status;
-            await _orderRepository.Save();
+            await _orderRepository.Save(order);
 
             return Ok();
         }

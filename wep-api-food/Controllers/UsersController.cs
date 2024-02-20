@@ -19,16 +19,19 @@ namespace wep_api_food.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IAuthDataClient _authDataClient;
+        private readonly ILogger<UsersController> _logger;
 
         public UsersController(IMapper mapper, 
             IUserRepository userRepository, 
             IPasswordHasher passwordHasher, 
-            IAuthDataClient authDataClient)
+            IAuthDataClient authDataClient,
+            ILogger<UsersController> logger)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _authDataClient = authDataClient;
+            _logger = logger;
         }
 
         [HttpPost("Register")]
@@ -36,10 +39,12 @@ namespace wep_api_food.Controllers
         {
             if (userDto == null)
             {
+                _logger.LogWarning($"Получена пустая форма {DateTime.UtcNow}");
                 return BadRequest();
             }
             if (await _userRepository.IsExists(userDto.Email))
             {
+                _logger.LogWarning($"Попытка добавить уже существующего пользователя {userDto.Email}");
                 return Conflict();
             }
             var user = new User
@@ -55,6 +60,7 @@ namespace wep_api_food.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
 
+            _logger.LogInformation($"Попытка получить токен для пользователя {user.Email}");
             var token = await _authDataClient.ReturnTokenAsync(user.Email, user.Role.ToString());
 
             var userRead = new UserReadModel()
@@ -75,11 +81,15 @@ namespace wep_api_food.Controllers
             var user = await _userRepository.Get(userDto.Email);
             if (user == null)
             {
+                _logger.LogWarning($"Пользователь не найден {userDto.Email}");
                 return NotFound();
             }
             if (!_passwordHasher.VerifyPasswod(user.Password, userDto.Password)) {
+                _logger.LogWarning($"Неправильный пароль для пользователя {userDto.Email}");
                 return BadRequest();
             }
+
+            _logger.LogInformation($"Попытка получить токен для пользователя {user.Email}");
             var token = await _authDataClient.ReturnTokenAsync(user.Email, user.Role.ToString());
 
             var userRead = new UserReadModel()

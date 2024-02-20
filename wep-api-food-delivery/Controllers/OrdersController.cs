@@ -14,11 +14,13 @@ namespace wep_api_food_delivery.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly HttpClientSender _httpClient;
+        private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(ApplicationDbContext context, HttpClientSender httpClient)
+        public OrdersController(ApplicationDbContext context, HttpClientSender httpClient, ILogger<OrdersController> logger)
         {
             _context = context;
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -50,8 +52,14 @@ namespace wep_api_food_delivery.Controllers
             var order = await _context.Orders.FindAsync(id);
             order.User = user;
             order.Status = Enums.OrderStatuses.Delivery;
-            await _context.SaveChangesAsync();
-
+            try
+            {
+                await _context.SaveChangesAsync();
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+            }
             await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id, Status = order.Status });
 
             return Ok("Courier take order");
@@ -67,7 +75,15 @@ namespace wep_api_food_delivery.Controllers
             var order = await _context.Orders.FindAsync(id);
             order.User = null;
             order.Status = Enums.OrderStatuses.Create;
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+            }
 
             await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id , Status = order.Status });
 

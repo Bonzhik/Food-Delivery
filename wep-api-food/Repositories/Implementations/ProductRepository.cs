@@ -6,7 +6,7 @@ namespace wep_api_food.Repositories.Implementations
 {
     public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
-        public ProductRepository(ApplicationDbContext context) : base(context)
+        public ProductRepository(ApplicationDbContext context, ILogger<ProductRepository> logger) : base(context, logger)
         {
         }
         public async Task<bool> IsExists(string title)

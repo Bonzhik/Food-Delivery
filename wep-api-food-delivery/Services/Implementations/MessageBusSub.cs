@@ -14,11 +14,13 @@ namespace wep_api_food_delivery.Services.Implementations
         private readonly IModel _channel;
         private string _queueName;
         private readonly EventProcessor _eventProcessor;
+        private readonly ILogger<MessageBusSub> _logger;
 
-        public MessageBusSub(IConfiguration configuration, EventProcessor eventProcessor)
+        public MessageBusSub(IConfiguration configuration, EventProcessor eventProcessor, ILogger<MessageBusSub> logger)
         {
             _configuration = configuration;
             _eventProcessor = eventProcessor;
+            _logger = logger;
             var factory = new ConnectionFactory()
             {
                 HostName = _configuration["RabbitMQHost"],
@@ -40,6 +42,7 @@ namespace wep_api_food_delivery.Services.Implementations
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Ошибка подключения к RabbitMQ - {DateTime.UtcNow}");
             }
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -55,11 +58,12 @@ namespace wep_api_food_delivery.Services.Implementations
                 {
                     var message = Encoding.UTF8.GetString(body.ToArray());
                     var eventData = JsonSerializer.Deserialize<OrderMessage>(message);
+                    _logger.LogInformation($"Сообщение из очереди успешно получено {DateTime.UtcNow}");
                     await _eventProcessor.HandleEvent(eventData);
                 }
                 catch (Exception ex)
                 {
-                    System.Console.WriteLine(ex.Message);
+                    _logger.LogError(ex.Message,$"Ошибка при обработке сообщения из очереди {DateTime.UtcNow}");
                 }
             };
 
@@ -70,7 +74,7 @@ namespace wep_api_food_delivery.Services.Implementations
 
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
-            Console.WriteLine("RabbitMQ Showdown");
+            _logger.LogInformation($"RabbitMQ Showdown - {DateTime.UtcNow}");
         }
         public override void Dispose()
         {

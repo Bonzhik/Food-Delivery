@@ -7,31 +7,45 @@ namespace wep_api_food.Services.Implementations
     public class AuthDataClient : IAuthDataClient
     {
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthDataClient> _logger;
 
-        public AuthDataClient(IConfiguration configuration) 
+        public AuthDataClient(IConfiguration configuration, ILogger<AuthDataClient> logger)
         {
-            _configuration = configuration; 
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<string> ReturnTokenAsync(string email, string role)
         {
-            var channel = GrpcChannel.ForAddress(_configuration["GrpcAuth"]);
-            var client = new GrpcToken.GrpcTokenClient(channel);
-            var request = new CreateTokenRequest()
-            {
-                Email = email,
-                Role = role,
-                Audience = _configuration["Audience"],
-                Key = _configuration["SecretKey"]
-            };
             try
             {
-                var reply = await client.CreateTokenAsync(request);
-                return reply.Token;
-            } 
+                var channel = GrpcChannel.ForAddress(_configuration["GrpcAuth"]);
+                var client = new GrpcToken.GrpcTokenClient(channel);
+                var request = new CreateTokenRequest()
+                {
+                    Email = email,
+                    Role = role,
+                    Audience = _configuration["Audience"],
+                    Key = _configuration["SecretKey"]
+                };
+                try
+                {
+                    var reply = await client.CreateTokenAsync(request);
+                    return reply.Token;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        "Ошибка при вызове gRPC-сервера для пользователя {@email} с ролью {@role} {@DateTimeNow},",
+                        email,
+                        role,
+                        DateTime.UtcNow);
+                    return null;
+                }
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"--> Couldnot call GRPC Server {ex.Message}");
+                _logger.LogError($"Ошибка при создании канала gRPC для адреса {_configuration["GrpcAuth"]}, {DateTime.UtcNow}");
                 return null;
             }
         }

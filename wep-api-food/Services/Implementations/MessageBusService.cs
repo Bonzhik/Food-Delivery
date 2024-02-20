@@ -12,10 +12,12 @@ namespace wep_api_food.Services.Implementations
         private readonly IConfiguration _configuration;
         private readonly IConnection _connection;
         private readonly IModel _channel;
+        private readonly ILogger<MessageBusService<T>> _logger;
 
-        public MessageBusService(IConfiguration configuration)
+        public MessageBusService(IConfiguration configuration, ILogger<MessageBusService<T>> logger)
         {
             _configuration = configuration;
+            _logger = logger;
             var factory = new ConnectionFactory()
             {
                 HostName = _configuration["RabbitMQHost"],
@@ -34,6 +36,7 @@ namespace wep_api_food.Services.Implementations
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Ошибка подключения к RabbitMQ - {DateTime.UtcNow}");
             }
         }
         public void SendMessage(T entity)
@@ -41,8 +44,7 @@ namespace wep_api_food.Services.Implementations
             try
             {
                 var message = JsonSerializer.Serialize(entity);
-                Console.WriteLine($"Serialized message -----> {message}");
-
+                _logger.LogInformation($"Отправка в очередь объекта {typeof(T).Name} - {DateTime.UtcNow}");
                 if (_connection.IsOpen)
                 {
                     var body = Encoding.UTF8.GetBytes(message);
@@ -54,10 +56,9 @@ namespace wep_api_food.Services.Implementations
                         body: body
                         );
                 }
-                Console.WriteLine("MessageSended");
             } catch (Exception ex)
             {
-                Console.WriteLine($"While sending message was ----> {ex.Message} ");
+                _logger.LogError($"При отправке сообщения произошла ошибка {ex.Message}");
             }
             
         }
@@ -72,7 +73,7 @@ namespace wep_api_food.Services.Implementations
 
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
-            Console.WriteLine("RabbitMQ Showdown");
+            _logger.LogInformation("RabbitMQ Showdown");
         }
     }
 }

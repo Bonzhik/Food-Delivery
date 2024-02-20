@@ -14,11 +14,13 @@ namespace wep_api_food_delivery.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IAuthDataClient _authDataClient;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(ApplicationDbContext context, IAuthDataClient authDataClient)
+        public UsersController(ApplicationDbContext context, IAuthDataClient authDataClient, ILogger<UsersController> logger)
         {
             _context = context;
             _authDataClient = authDataClient;
+            _logger = logger;
         }
 
         [HttpGet] 
@@ -27,6 +29,7 @@ namespace wep_api_food_delivery.Controllers
             var user =await _context.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email && u.Password == userDto.Password);
             if (user == null)
             {
+                _logger.LogWarning($"Не удалось войти в аккаунт {userDto.Email}");
                 return NotFound();
             }
             var token = await _authDataClient.ReturnTokenAsync(user.Email, user.Role.ToString());

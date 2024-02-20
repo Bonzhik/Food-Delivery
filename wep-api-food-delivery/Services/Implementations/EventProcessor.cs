@@ -9,6 +9,7 @@ namespace wep_api_food_delivery.Services.Implementations
     public class EventProcessor
     {
         private readonly IDbContextFactory _contextFactory;
+        private ILogger<EventProcessor> _logger;
 
         public EventProcessor(IDbContextFactory contextFactory)
         {
@@ -28,6 +29,7 @@ namespace wep_api_food_delivery.Services.Implementations
         }
         private async Task<bool> OnCreate(OrderMessage orderMessage)
         {
+            _logger.LogInformation($"Попытка обработать сообщение из очереди на добавление заказа {DateTime.UtcNow}");
             try
             {
                 using (var _context = _contextFactory.CreateDbContext())
@@ -45,13 +47,14 @@ namespace wep_api_food_delivery.Services.Implementations
                 }
             } catch (Exception ex)
             {
-                Console.WriteLine($"Failed to CreateEvent ---> {ex.Message}");
+                _logger.LogError($"Ошибка при обработке сообщения на добавление -> {ex.Message} - {DateTime.UtcNow}");
                 return false;
             }
             
         }
         private async Task<bool> OnCansel(OrderMessage orderMessage)
         {
+            _logger.LogInformation($"Попытка обработать сообщение из очереди на удаление заказа {DateTime.UtcNow}");
             try
             {
                 using (var _context = _contextFactory.CreateDbContext())
@@ -63,7 +66,7 @@ namespace wep_api_food_delivery.Services.Implementations
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to CanselEvent ---> {ex.Message}");
+                _logger.LogError($"Ошибка при обработке сообщения на удаление -> {ex.Message} - {DateTime.UtcNow}");
                 return false;
             }
         }

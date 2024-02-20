@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Text;
 using wep_api_food.Services.Implementations;
 using wep_api_food_delivery.Data;
@@ -41,6 +42,9 @@ builder.Services.AddSingleton<IDbContextFactory, DbContextFactory>(provider =>
     return new DbContextFactory(options);
 });
 
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -53,6 +57,7 @@ var context = app.Services.GetRequiredService<ApplicationDbContext>();
 context.Database.Migrate();
 SeedData.Initialize(context);
 
+app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
