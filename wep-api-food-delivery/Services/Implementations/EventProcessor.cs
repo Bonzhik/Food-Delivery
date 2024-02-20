@@ -11,9 +11,10 @@ namespace wep_api_food_delivery.Services.Implementations
         private readonly IDbContextFactory _contextFactory;
         private ILogger<EventProcessor> _logger;
 
-        public EventProcessor(IDbContextFactory contextFactory)
+        public EventProcessor(IDbContextFactory contextFactory, ILogger<EventProcessor> logger)
         {
             _contextFactory = contextFactory;
+            _logger = logger;
         }
         public async Task HandleEvent(OrderMessage orderMessage)
         {

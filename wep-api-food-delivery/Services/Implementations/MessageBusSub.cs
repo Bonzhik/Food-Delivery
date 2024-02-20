@@ -42,7 +42,7 @@ namespace wep_api_food_delivery.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Ошибка подключения к RabbitMQ - {DateTime.UtcNow}");
+                _logger.LogError($"Ошибка подключения к RabbitMQ - {DateTime.UtcNow} -> {ex.Message}");
             }
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)

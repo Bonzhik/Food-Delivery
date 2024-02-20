@@ -47,20 +47,28 @@ namespace wep_api_food_delivery.Controllers
         [Route("take/{id}")]
         public async Task<IActionResult> TakeOrder(Guid id)
         {
-            var email = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            var order = await _context.Orders.FindAsync(id);
-            order.User = user;
-            order.Status = Enums.OrderStatuses.Delivery;
             try
             {
-                await _context.SaveChangesAsync();
+                var email = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                var order = await _context.Orders.FindAsync(id);
+                order.User = user;
+                order.Status = Enums.OrderStatuses.Delivery;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                    return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                }
+                await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id, Status = order.Status });
             } catch (Exception ex)
             {
-                _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
-                return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                _logger.LogError($"Во время принятия заказа произошла ошибка -> {ex.Message}");
+                return StatusCode(503, $"Ошибка принятия заказа {DateTime.UtcNow}");
             }
-            await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id, Status = order.Status });
 
             return Ok("Courier take order");
         }
@@ -70,23 +78,30 @@ namespace wep_api_food_delivery.Controllers
         [Route("cansel/{id}")]
         public async Task<IActionResult> CanselOrderDelivery(Guid id)
         {
-            var email = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            var order = await _context.Orders.FindAsync(id);
-            order.User = null;
-            order.Status = Enums.OrderStatuses.Create;
             try
             {
-                await _context.SaveChangesAsync();
+                var email = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                var order = await _context.Orders.FindAsync(id);
+                order.User = null;
+                order.Status = Enums.OrderStatuses.Create;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                    return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                }
+
+                await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id, Status = order.Status });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
-                return StatusCode(500, $"Ошибка сохранения заказа в базу {DateTime.UtcNow}");
+                _logger.LogError($"Во время отмены заказа произошла ошибка -> {ex.Message}");
+                return StatusCode(503, $"Ошибка отмены заказа {DateTime.UtcNow}");
             }
-
-            await _httpClient.NotifyAboutOrder(new OrderNotify { Id = id , Status = order.Status });
-
             return Ok("Courier cansel order delivery");
         }
     }
