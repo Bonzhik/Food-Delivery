@@ -1,4 +1,5 @@
-﻿using wep_api_food.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using wep_api_food.Enums;
 
 namespace wep_api_food.Models
 {
