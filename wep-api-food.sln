@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wep-api-food-delivery", "we
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "web-api-food-auth", "web-api-food-auth\web-api-food-auth.csproj", "{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web-api-food.Tests", "web-api-food\web-api-food.Tests.csproj", "{205C79C9-4AD0-442E-A256-5C0BD564BB17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "web-api-food-delivery.Tests", "web-api-food-delivery.Tests\web-api-food-delivery.Tests.csproj", "{916EBF7B-3321-488F-983B-72A08F55024B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web-api-food-delivery.Tests", "web-api-food-delivery.Tests\web-api-food-delivery.Tests.csproj", "{916EBF7B-3321-488F-983B-72A08F55024B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "web-api-food.Tests", "web-api-food.Tests\web-api-food.Tests.csproj", "{44426F54-005A-49DB-98AE-77535B59428A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +31,14 @@ Global
 		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9FBD8C6-DBB5-45C4-ADAC-0B0D6F85D4BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{205C79C9-4AD0-442E-A256-5C0BD564BB17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{205C79C9-4AD0-442E-A256-5C0BD564BB17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{205C79C9-4AD0-442E-A256-5C0BD564BB17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{205C79C9-4AD0-442E-A256-5C0BD564BB17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{916EBF7B-3321-488F-983B-72A08F55024B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{916EBF7B-3321-488F-983B-72A08F55024B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{916EBF7B-3321-488F-983B-72A08F55024B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{916EBF7B-3321-488F-983B-72A08F55024B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44426F54-005A-49DB-98AE-77535B59428A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44426F54-005A-49DB-98AE-77535B59428A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44426F54-005A-49DB-98AE-77535B59428A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44426F54-005A-49DB-98AE-77535B59428A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
