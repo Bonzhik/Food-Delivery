@@ -23,7 +23,7 @@ namespace wep_api_food_delivery.Controllers
             _logger = logger;
         }
 
-        [HttpGet] 
+        [HttpPost] 
         public async Task<IActionResult> Login (UserLoginModel userDto)
         {
             var user =await _context.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email && u.Password == userDto.Password);

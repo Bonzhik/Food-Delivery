@@ -75,7 +75,7 @@ namespace wep_api_food.Controllers
             return Ok(userRead);
         }
 
-        [HttpGet("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginModel userDto)
         {
             var user = await _userRepository.Get(userDto.Email);

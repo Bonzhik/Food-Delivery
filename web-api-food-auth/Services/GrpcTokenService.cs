@@ -37,9 +37,11 @@ namespace web_api_food_auth.Services
             };
 
             var token = tokenHandler.CreateToken(tokenDescritor);
+            var stringToken = "Bearer " + tokenHandler.WriteToken(token);
             var response = new CreateTokenResponse
             {
-                Token = tokenHandler.WriteToken(token)
+                Token = stringToken
+
             };
 
             return Task.FromResult(response);
